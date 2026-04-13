@@ -88,7 +88,10 @@ export async function bindBrowserWorkspace() {
           <article class="lane-card">
             <h3>Active Session</h3>
             <p>${session.targetUrl || 'No target URL set'}</p>
-            <small>This pane will host the real proxy-backed browser surface in a later pass.</small>
+            <div class="lane-actions">
+              <a href="/proxy/view/${session.id}" target="_blank" rel="noopener"><button>Open Proxy View</button></a>
+            </div>
+            <small>This opens the current proxy-view route contract for the session.</small>
           </article>
         `;
       });
@@ -117,7 +120,10 @@ export async function bindBrowserWorkspace() {
       <article class="lane-card">
         <h3>Active Session</h3>
         <p>${session.targetUrl || 'No target URL set'}</p>
-        <small>This pane will host the real proxy-backed browser surface in a later pass.</small>
+        <div class="lane-actions">
+          <a href="/proxy/view/${session.id}" target="_blank" rel="noopener"><button>Open Proxy View</button></a>
+        </div>
+        <small>This opens the current proxy-view route contract for the session.</small>
       </article>
     `;
     refreshSessions();

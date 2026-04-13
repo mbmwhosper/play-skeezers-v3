@@ -7,6 +7,7 @@ import { createProxyRuntime } from './proxy-runtime.js';
 import { getLane } from './catalog-service.js';
 import { ProxyAdapter } from './proxy-adapter.js';
 import { handleProxyRoute } from './proxy-routes.js';
+import { renderProxyView } from './proxy-view.js';
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -44,6 +45,14 @@ export function createApp(rootDir) {
     if (!auth.ok && !req.url.startsWith('/api/auth/verify') && req.url !== '/health') {
       res.writeHead(auth.status, { 'content-type': 'application/json; charset=utf-8' });
       res.end(JSON.stringify(auth.body));
+      return;
+    }
+
+    if (req.url?.startsWith('/proxy/view/')) {
+      const sessionId = req.url.split('/').pop();
+      const view = renderProxyView(sessionId);
+      res.writeHead(view.status, { 'content-type': 'text/html; charset=utf-8' });
+      res.end(view.html);
       return;
     }
 
