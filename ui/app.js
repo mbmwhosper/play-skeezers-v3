@@ -3,11 +3,17 @@ const tabsEl = document.getElementById('tabs');
 const tabContentEl = document.getElementById('tabContent');
 const newTabBtn = document.getElementById('newTabBtn');
 const navButtons = [...document.querySelectorAll('[data-route]')];
+const passwordGateEl = document.getElementById('passwordGate');
+const passwordInputEl = document.getElementById('passwordInput');
+const passwordSubmitEl = document.getElementById('passwordSubmit');
+const passwordErrorEl = document.getElementById('passwordError');
+const passwordHintEl = document.getElementById('passwordHint');
 
 const state = {
   activeRoute: localStorage.getItem('v3.activeRoute') || 'home',
   activeTheme: localStorage.getItem('v3.theme') || 'default',
   tabs: readTabs(),
+  authToken: sessionStorage.getItem('v3.password') || '',
 };
 
 if (!state.tabs.length) {
@@ -25,13 +31,32 @@ let activeTabId = localStorage.getItem('v3.activeTabId') || state.tabs[0].id;
 let runtimeConfig = null;
 let proxyState = null;
 
+async function apiFetch(url, options = {}) {
+  const headers = new Headers(options.headers || {});
+  if (state.authToken) headers.set('x-v3-password', state.authToken);
+  const response = await fetch(url, { ...options, headers });
+  if (response.status === 401) throw new Error('AUTH_REQUIRED');
+  return response;
+}
+
+async function verifyPassword(password) {
+  const response = await fetch('/api/auth/verify', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ password })
+  });
+  if (!response.ok) throw new Error('BAD_PASSWORD');
+  state.authToken = password;
+  sessionStorage.setItem('v3.password', password);
+}
+
 async function loadConfig() {
-  const response = await fetch('/api/config');
+  const response = await apiFetch('/api/config');
   return response.json();
 }
 
 async function loadProxyState() {
-  const response = await fetch('/api/proxy/status');
+  const response = await apiFetch('/api/proxy/status');
   return response.json();
 }
 
@@ -70,6 +95,17 @@ function renderTabs() {
   });
 }
 
+function cardMarkup(item) {
+  return `
+    <article class="lane-card">
+      <h3>${item.title}</h3>
+      <p>${item.description || item.notes || ''}</p>
+      <small>Status: ${item.status || 'unknown'}</small>
+      ${item.route ? `<div class="lane-actions"><button data-open-route="${item.route}">Open route</button></div>` : ''}
+    </article>
+  `;
+}
+
 function settingsMarkup(config) {
   return `
     <div class="settings-grid">
@@ -87,7 +123,7 @@ function settingsMarkup(config) {
       <article class="lane-card">
         <h3>Proxy Status</h3>
         <p>${proxyState?.message || 'Unknown'}</p>
-        <small>Enabled flag: ${config.proxyEnabled ? 'true' : 'false'}</small>
+        <small>${proxyState?.runtime?.message || ''}</small>
       </article>
     </div>
   `;
@@ -98,16 +134,32 @@ function laneMarkup(title, items) {
     <section>
       <p class="eyebrow">${title}</p>
       <div class="lane-grid">
-        ${items.map((item) => `
-          <article class="lane-card">
-            <h3>${item.title}</h3>
-            <p>${item.description || item.notes || ''}</p>
-            <small>Status: ${item.status || 'unknown'}</small>
-          </article>
-        `).join('')}
+        ${items.map(cardMarkup).join('')}
       </div>
     </section>
   `;
+}
+
+function bindRenderedEvents(config) {
+  document.querySelectorAll('[data-theme]').forEach((button) => {
+    button.addEventListener('click', () => {
+      applyTheme(button.dataset.theme, config.themes || []);
+      setRoute('settings');
+    });
+  });
+  document.querySelectorAll('[data-open-route]').forEach((button) => {
+    button.addEventListener('click', () => {
+      state.tabs.push({
+        id: crypto.randomUUID(),
+        title: button.dataset.openRoute,
+        route: state.activeRoute,
+        content: `<p>Route target scaffold: <code>${button.dataset.openRoute}</code></p>`
+      });
+      activeTabId = state.tabs.at(-1).id;
+      saveTabs();
+      renderTabs();
+    });
+  });
 }
 
 function setRoute(route) {
@@ -139,17 +191,7 @@ function setRoute(route) {
   activeTabId = state.tabs.at(-1).id;
   saveTabs();
   renderTabs();
-  bindSettingsEvents(runtimeConfig);
-}
-
-function bindSettingsEvents(config) {
-  document.querySelectorAll('[data-theme]').forEach((button) => {
-    button.addEventListener('click', () => {
-      applyTheme(button.dataset.theme, config.themes || []);
-      bindSettingsEvents(config);
-      renderTabs();
-    });
-  });
+  bindRenderedEvents(runtimeConfig);
 }
 
 newTabBtn.addEventListener('click', () => {
@@ -164,12 +206,36 @@ newTabBtn.addEventListener('click', () => {
   renderTabs();
 });
 
-Promise.all([loadConfig(), loadProxyState()]).then(([config, proxy]) => {
-  runtimeConfig = config;
-  proxyState = proxy;
-  applyTheme(state.activeTheme, config.themes || []);
-  navButtons.forEach((button) => button.addEventListener('click', () => setRoute(button.dataset.route)));
-  routeTitle.textContent = state.activeRoute[0].toUpperCase() + state.activeRoute.slice(1);
-  navButtons.forEach((button) => button.classList.toggle('active', button.dataset.route === state.activeRoute));
-  renderTabs();
+passwordSubmitEl?.addEventListener('click', async () => {
+  passwordErrorEl.textContent = '';
+  try {
+    await verifyPassword(passwordInputEl.value);
+    passwordGateEl.classList.add('hidden');
+    await bootstrap();
+  } catch {
+    passwordErrorEl.textContent = 'Incorrect password.';
+  }
 });
+
+async function bootstrap() {
+  try {
+    const [config, proxy] = await Promise.all([loadConfig(), loadProxyState()]);
+    runtimeConfig = config;
+    proxyState = proxy;
+    applyTheme(state.activeTheme, config.themes || []);
+    passwordHintEl.textContent = config.passwordHint || 'Enter the workspace password to continue.';
+    navButtons.forEach((button) => button.onclick = () => setRoute(button.dataset.route));
+    routeTitle.textContent = state.activeRoute[0].toUpperCase() + state.activeRoute.slice(1);
+    navButtons.forEach((button) => button.classList.toggle('active', button.dataset.route === state.activeRoute));
+    passwordGateEl.classList.add('hidden');
+    renderTabs();
+  } catch (error) {
+    if (String(error.message) === 'AUTH_REQUIRED') {
+      passwordGateEl.classList.remove('hidden');
+      return;
+    }
+    console.error(error);
+  }
+}
+
+bootstrap();

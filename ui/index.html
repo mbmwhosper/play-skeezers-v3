@@ -7,6 +7,17 @@
   <link rel="stylesheet" href="/ui/styles.css" />
 </head>
 <body>
+  <div id="passwordGate" class="password-gate hidden">
+    <div class="gate-card">
+      <p class="eyebrow">Protected workspace</p>
+      <h2>Password required</h2>
+      <p id="passwordHint">Enter the workspace password to continue.</p>
+      <input id="passwordInput" type="password" placeholder="Password" />
+      <button id="passwordSubmit">Unlock</button>
+      <p id="passwordError" class="error-text"></p>
+    </div>
+  </div>
+
   <div class="app-shell">
     <aside class="sidebar">
       <div class="brand">

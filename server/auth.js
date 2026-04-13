@@ -7,3 +7,10 @@ export function checkPasswordGate(req) {
   if (header && header === password) return { ok: true };
   return { ok: false, status: 401, body: { error: 'Password required' } };
 }
+
+export function verifyPassword(value) {
+  const enabled = process.env.V3_PASSWORD_ENABLED === 'true';
+  const password = process.env.V3_PASSWORD || '';
+  if (!enabled) return { ok: true };
+  return { ok: value === password };
+}

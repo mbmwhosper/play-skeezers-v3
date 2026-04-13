@@ -14,16 +14,35 @@ body {
   background: linear-gradient(180deg, var(--bg), #0b1425);
   color: var(--text);
 }
-button {
+button, input {
   border: 1px solid var(--line);
   background: rgba(255,255,255,0.03);
   color: var(--text);
   border-radius: 14px;
   padding: .8rem 1rem;
-  cursor: pointer;
 }
+button { cursor: pointer; }
 button.ghost { background: transparent; }
 button.active { background: rgba(119, 178, 255, 0.15); }
+.hidden { display: none !important; }
+.password-gate {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 8, 16, 0.84);
+  display: grid;
+  place-items: center;
+  z-index: 30;
+}
+.gate-card {
+  width: min(460px, 92vw);
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(18,35,61,.96), rgba(10,18,31,.98));
+  border-radius: 22px;
+  padding: 1rem;
+  display: grid;
+  gap: .8rem;
+}
+.error-text { color: #ff9b9b; min-height: 1.2rem; }
 .app-shell {
   min-height: 100vh;
   display: grid;
@@ -64,7 +83,7 @@ button.active { background: rgba(119, 178, 255, 0.15); }
   gap: 1rem;
   padding: 1rem;
 }
-.topbar-actions, .tabs, .theme-list {
+.topbar-actions, .tabs, .theme-list, .lane-actions {
   display: flex;
   gap: .6rem;
   flex-wrap: wrap;
