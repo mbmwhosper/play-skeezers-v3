@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: play-skeezers-v3
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: V3_PASSWORD_ENABLED
+        value: false
+      - key: V3_PROXY_ENABLED
+        value: false

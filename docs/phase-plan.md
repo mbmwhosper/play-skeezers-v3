@@ -8,7 +8,7 @@
 5. Frontend shell scaffold
 6. Tab/workspace scaffold
 7. Backend app structure scaffold
-8. Koyeb-ready deployment files scaffold
+8. Render/Koyeb-ready deployment files scaffold
 
 ## Next
 - password gate
@@ -16,3 +16,4 @@
 - proxy backend integration
 - app/game catalog integration
 - imported repo manifest flow
+- first Render deployment
