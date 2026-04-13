@@ -1,0 +1,32 @@
+{
+  "items": [
+    {
+      "id": "browser-workspace",
+      "title": "Browser Workspace",
+      "status": "planned",
+      "description": "Tabbed browser/app workspace inspired by Interstellar's built-in tab system.",
+      "route": "/apps/browser-workspace"
+    },
+    {
+      "id": "now-gg-launcher",
+      "title": "Now.gg Launcher",
+      "status": "planned",
+      "description": "Dedicated app launcher lane for cloud-game surfaces like Now.gg.",
+      "route": "/apps/now-gg"
+    },
+    {
+      "id": "geforce-now-launcher",
+      "title": "GeForce NOW Launcher",
+      "status": "planned",
+      "description": "Dedicated launcher lane for GeForce NOW-style cloud gaming entry points.",
+      "route": "/apps/geforce-now"
+    },
+    {
+      "id": "inspect-tool",
+      "title": "Inspect Tool",
+      "status": "planned",
+      "description": "Power-user utility surface inspired by Interstellar's inspect-element feature.",
+      "route": "/apps/inspect"
+    }
+  ]
+}

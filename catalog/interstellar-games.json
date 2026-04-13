@@ -1,0 +1,25 @@
+{
+  "items": [
+    {
+      "id": "featured-arcade-lane",
+      "title": "Featured Arcade Lane",
+      "status": "planned",
+      "description": "Interstellar-style flagship games lane with quick-open and tabbed handoff.",
+      "route": "/games/featured"
+    },
+    {
+      "id": "cloud-games-lane",
+      "title": "Cloud Games Lane",
+      "status": "planned",
+      "description": "Lane for browser-routed cloud game surfaces and integrations.",
+      "route": "/games/cloud"
+    },
+    {
+      "id": "quick-launch-games",
+      "title": "Quick Launch Games",
+      "status": "planned",
+      "description": "Fast-start games lane for direct jump-in behavior.",
+      "route": "/games/quick-launch"
+    }
+  ]
+}

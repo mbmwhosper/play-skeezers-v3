@@ -1,0 +1,34 @@
+{
+  "items": [
+    {
+      "id": "tab-system",
+      "title": "Built-in Tab System",
+      "status": "in-progress",
+      "description": "Workspace tab system for games, apps, and proxy sessions."
+    },
+    {
+      "id": "theme-system",
+      "title": "Theme System",
+      "status": "in-progress",
+      "description": "Customizable interface themes and visual presets."
+    },
+    {
+      "id": "password-protection",
+      "title": "Password Protection",
+      "status": "in-progress",
+      "description": "Optional password gate for the workspace."
+    },
+    {
+      "id": "tab-cloaking",
+      "title": "Tab Cloaking",
+      "status": "planned",
+      "description": "Future masking/cloaking controls for browser presentation."
+    },
+    {
+      "id": "proxy-runtime",
+      "title": "Proxy Runtime",
+      "status": "planned",
+      "description": "Real backend-powered proxy runtime for the browser lane."
+    }
+  ]
+}

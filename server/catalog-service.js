@@ -16,11 +16,12 @@ export function getCatalog() {
 
 export function getLane(route) {
   const config = loadConfig();
-  if (route === 'games') return config.games;
-  if (route === 'apps') return config.apps;
+  if (route === 'games') return [...config.games, ...config.interstellar.games];
+  if (route === 'apps') return [...config.apps, ...config.interstellar.apps];
   if (route === 'proxy') return config.proxy;
   if (route === 'emulators') return config.integrations.filter((item) => item.type === 'emulator');
   if (route === 'integrations') return config.integrations;
+  if (route === 'features') return config.interstellar.features;
   if (route === 'featured') {
     const featured = readJson('catalog/featured.json').sections;
     const byId = new Map([...config.games, ...config.apps, ...config.proxy].map((item) => [item.id, item]));
