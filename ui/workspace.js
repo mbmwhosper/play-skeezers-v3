@@ -1,3 +1,23 @@
+async function fetchSessions() {
+  const response = await fetch('/api/proxy/sessions');
+  const data = await response.json();
+  return data.items || [];
+}
+
+function renderSessionList(sessions) {
+  if (!sessions.length) return '<p>No proxy sessions yet.</p>';
+  return sessions.map((session) => `
+    <article class="lane-card">
+      <h3>${session.title}</h3>
+      <p>${session.targetUrl || 'No target URL'}</p>
+      <small>Status: ${session.status}</small>
+      <div class="lane-actions">
+        <button data-session-id="${session.id}">Open Session</button>
+      </div>
+    </article>
+  `).join('');
+}
+
 export function browserWorkspaceMarkup() {
   return `
     <section class="workspace-shell">
@@ -29,6 +49,9 @@ export function browserWorkspaceMarkup() {
             <div class="workspace-output" id="workspaceOutput">
               <p>No proxy session yet.</p>
             </div>
+            <div class="workspace-sessions" id="workspaceSessions">
+              <p>Loading sessions...</p>
+            </div>
           </div>
         </section>
       </div>
@@ -36,11 +59,30 @@ export function browserWorkspaceMarkup() {
   `;
 }
 
-export function bindBrowserWorkspace() {
+export async function bindBrowserWorkspace() {
   const openButton = document.getElementById('workspaceOpen');
   const addressInput = document.getElementById('workspaceAddress');
   const output = document.getElementById('workspaceOutput');
-  if (!openButton || !addressInput || !output) return;
+  const sessionsEl = document.getElementById('workspaceSessions');
+  if (!openButton || !addressInput || !output || !sessionsEl) return;
+
+  async function refreshSessions() {
+    const sessions = await fetchSessions();
+    sessionsEl.innerHTML = renderSessionList(sessions);
+    sessionsEl.querySelectorAll('[data-session-id]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const response = await fetch(`/api/proxy/sessions/${button.dataset.sessionId}`);
+        const session = await response.json();
+        output.innerHTML = `
+          <article class="lane-card">
+            <h3>${session.title}</h3>
+            <p>Target: ${session.targetUrl || 'unset'}</p>
+            <small>Status: ${session.status}</small>
+          </article>
+        `;
+      });
+    });
+  }
 
   openButton.addEventListener('click', async () => {
     const response = await fetch('/api/proxy/sessions', {
@@ -56,5 +98,8 @@ export function bindBrowserWorkspace() {
         <small>Status: ${session.status}</small>
       </article>
     `;
+    refreshSessions();
   });
+
+  refreshSessions();
 }

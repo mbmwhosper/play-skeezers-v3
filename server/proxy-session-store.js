@@ -1,7 +1,7 @@
 const sessions = new Map();
 
 export function listProxySessions() {
-  return [...sessions.values()];
+  return [...sessions.values()].sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
 }
 
 export function createProxySession(input = {}) {
@@ -18,4 +18,12 @@ export function createProxySession(input = {}) {
 
 export function getProxySession(id) {
   return sessions.get(id) || null;
+}
+
+export function updateProxySession(id, patch = {}) {
+  const current = sessions.get(id);
+  if (!current) return null;
+  const next = { ...current, ...patch, updatedAt: new Date().toISOString() };
+  sessions.set(id, next);
+  return next;
 }
