@@ -4,6 +4,8 @@ import { loadConfig } from './config.js';
 import { checkPasswordGate, verifyPassword } from './auth.js';
 import { proxyStatus } from './proxy.js';
 import { createProxyRuntime } from './proxy-runtime.js';
+import { getLane } from './catalog-service.js';
+import { ProxyAdapter } from './proxy-adapter.js';
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -17,6 +19,7 @@ const MIME = {
 };
 
 const proxyRuntime = createProxyRuntime();
+const proxyAdapter = new ProxyAdapter();
 
 export function createApp(rootDir) {
   return async (req, res) => {
@@ -49,9 +52,16 @@ export function createApp(rootDir) {
       return;
     }
 
+    if (req.url?.startsWith('/api/lanes/')) {
+      const route = req.url.split('/').pop();
+      res.writeHead(200, { 'content-type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({ route, items: getLane(route) }));
+      return;
+    }
+
     if (req.url === '/api/proxy/status') {
       res.writeHead(200, { 'content-type': 'application/json; charset=utf-8' });
-      res.end(JSON.stringify({ ...proxyStatus(), runtime: proxyRuntime }));
+      res.end(JSON.stringify({ ...proxyStatus(), runtime: proxyRuntime, adapter: proxyAdapter.status() }));
       return;
     }
 

@@ -60,6 +60,11 @@ async function loadProxyState() {
   return response.json();
 }
 
+async function loadLane(route) {
+  const response = await apiFetch(`/api/lanes/${route}`);
+  return response.json();
+}
+
 function readTabs() {
   try {
     return JSON.parse(localStorage.getItem('v3.tabs') || '[]');
@@ -123,20 +128,9 @@ function settingsMarkup(config) {
       <article class="lane-card">
         <h3>Proxy Status</h3>
         <p>${proxyState?.message || 'Unknown'}</p>
-        <small>${proxyState?.runtime?.message || ''}</small>
+        <small>${proxyState?.adapter?.message || ''}</small>
       </article>
     </div>
-  `;
-}
-
-function laneMarkup(title, items) {
-  return `
-    <section>
-      <p class="eyebrow">${title}</p>
-      <div class="lane-grid">
-        ${items.map(cardMarkup).join('')}
-      </div>
-    </section>
   `;
 }
 
@@ -162,31 +156,37 @@ function bindRenderedEvents(config) {
   });
 }
 
-function setRoute(route) {
+async function setRoute(route) {
   state.activeRoute = route;
   routeTitle.textContent = route[0].toUpperCase() + route.slice(1);
   navButtons.forEach((button) => button.classList.toggle('active', button.dataset.route === route));
 
-  const laneMap = {
-    games: laneMarkup('Games', runtimeConfig.games || []),
-    apps: laneMarkup('Apps', runtimeConfig.apps || []),
-    proxy: laneMarkup('Proxy', runtimeConfig.proxy || []),
-    emulators: laneMarkup('Emulators', runtimeConfig.integrations.filter((item) => item.type === 'emulator')),
-    settings: settingsMarkup(runtimeConfig),
-    home: `
-      <div class="workspace-card">
-        <h3>Platform overview</h3>
-        <p>V3 is now catalog-driven, Koyeb-ready, and structured for real proxy/app/game integrations.</p>
-      </div>
-      ${laneMarkup('Planned integrations', runtimeConfig.integrations)}
-    `,
-  };
+  const lane = await loadLane(route === 'home' || route === 'settings' ? 'integrations' : route);
+  const laneMarkup = route === 'settings'
+    ? settingsMarkup(runtimeConfig)
+    : route === 'home'
+      ? `
+        <div class="workspace-card">
+          <h3>Platform overview</h3>
+          <p>V3 is now catalog-driven, Koyeb-ready, and structured for real proxy/app/game integrations.</p>
+        </div>
+        <section>
+          <p class="eyebrow">Planned integrations</p>
+          <div class="lane-grid">${lane.items.map(cardMarkup).join('')}</div>
+        </section>
+      `
+      : `
+        <section>
+          <p class="eyebrow">${routeTitle.textContent}</p>
+          <div class="lane-grid">${lane.items.map(cardMarkup).join('')}</div>
+        </section>
+      `;
 
   state.tabs.push({
     id: crypto.randomUUID(),
     title: routeTitle.textContent,
     route,
-    content: laneMap[route] || '<p>Unknown route</p>'
+    content: laneMarkup
   });
   activeTabId = state.tabs.at(-1).id;
   saveTabs();
