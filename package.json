@@ -1,0 +1,11 @@
+{
+  "name": "play-skeezers-v3",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Koyeb-ready V3 platform for play.skeezers.org",
+  "scripts": {
+    "dev": "node server/index.js",
+    "start": "node server/index.js"
+  }
+}
