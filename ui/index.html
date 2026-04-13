@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skeezers Arcade V3</title>
+  <link rel="stylesheet" href="/ui/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <p class="eyebrow">V3</p>
+        <h1>Skeezers Arcade</h1>
+        <p class="subtle">Koyeb-ready games, apps, proxy, and emulator platform.</p>
+      </div>
+      <nav class="nav">
+        <button data-route="home" class="active">Home</button>
+        <button data-route="games">Games</button>
+        <button data-route="apps">Apps</button>
+        <button data-route="proxy">Proxy</button>
+        <button data-route="emulators">Emulators</button>
+        <button data-route="settings">Settings</button>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Workspace</p>
+          <h2 id="routeTitle">Home</h2>
+        </div>
+        <div class="topbar-actions">
+          <button id="newTabBtn">New Tab</button>
+          <button class="ghost">Themes</button>
+          <button class="ghost">Login Gate</button>
+        </div>
+      </header>
+
+      <section class="tabs-panel">
+        <div id="tabs" class="tabs"></div>
+        <div id="tabContent" class="tab-content"></div>
+      </section>
+
+      <section class="feature-grid">
+        <article class="feature-card">
+          <p class="eyebrow">Games</p>
+          <h3>Fast launch surface</h3>
+          <p>Catalog lane for hosted games with search, featured rows, and quick-open flows.</p>
+        </article>
+        <article class="feature-card">
+          <p class="eyebrow">Apps</p>
+          <h3>Interstellar-style app shell</h3>
+          <p>App lane for browser tools, utility surfaces, and imported integrations with boundaries.</p>
+        </article>
+        <article class="feature-card">
+          <p class="eyebrow">Proxy</p>
+          <h3>Backend-powered lane</h3>
+          <p>Proxy lane reserved for Koyeb-hosted runtime support, not static-host fakery.</p>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="/ui/app.js"></script>
+</body>
+</html>

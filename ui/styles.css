@@ -1,0 +1,96 @@
+:root {
+  --bg: #07111f;
+  --panel: #0d182a;
+  --panel-2: #12233d;
+  --line: rgba(120, 164, 255, 0.18);
+  --text: #edf4ff;
+  --muted: #9fb3d9;
+  --accent: #77b2ff;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+  background: linear-gradient(180deg, #07111f, #0b1425);
+  color: var(--text);
+}
+button {
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.03);
+  color: var(--text);
+  border-radius: 14px;
+  padding: .8rem 1rem;
+  cursor: pointer;
+}
+button.ghost { background: transparent; }
+button.active { background: rgba(119, 178, 255, 0.15); }
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+}
+.sidebar {
+  padding: 1rem;
+  border-right: 1px solid var(--line);
+  background: rgba(9, 16, 28, 0.9);
+}
+.brand h1, .topbar h2, .feature-card h3 { margin: 0; }
+.subtle, .feature-card p { color: var(--muted); }
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--accent);
+  font-size: .75rem;
+}
+.nav {
+  display: grid;
+  gap: .5rem;
+  margin-top: 1rem;
+}
+.main {
+  padding: 1rem;
+  display: grid;
+  gap: 1rem;
+}
+.topbar, .tabs-panel, .feature-card {
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(18,35,61,.92), rgba(10,18,31,.95));
+  border-radius: 22px;
+}
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+}
+.topbar-actions, .tabs {
+  display: flex;
+  gap: .6rem;
+  flex-wrap: wrap;
+}
+.tabs-panel { padding: 1rem; }
+.tabs { margin-bottom: 1rem; }
+.tab {
+  padding: .65rem .9rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.05);
+}
+.tab.active { background: rgba(119, 178, 255, 0.18); }
+.tab-content {
+  min-height: 180px;
+  border: 1px dashed var(--line);
+  border-radius: 18px;
+  padding: 1rem;
+  color: var(--muted);
+}
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+.feature-card { padding: 1rem; }
+@media (max-width: 900px) {
+  .app-shell { grid-template-columns: 1fr; }
+  .feature-grid { grid-template-columns: 1fr; }
+}

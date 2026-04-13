@@ -1,0 +1,44 @@
+import { readFileSync, existsSync } from 'node:fs';
+import { extname, join, normalize } from 'node:path';
+
+const MIME = {
+  '.html': 'text/html; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.svg': 'image/svg+xml',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.ico': 'image/x-icon',
+};
+
+export function createApp(rootDir) {
+  return (req, res) => {
+    if (req.url === '/health') {
+      res.writeHead(200, { 'content-type': 'application/json' });
+      res.end(JSON.stringify({ ok: true, service: 'play-skeezers-v3' }));
+      return;
+    }
+
+    if (req.url === '/api/config') {
+      res.writeHead(200, { 'content-type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({ proxyEnabled: false, passwordProtection: false, themes: ['default'] }));
+      return;
+    }
+
+    const requestPath = req.url === '/' ? '/ui/index.html' : req.url;
+    const safePath = normalize(requestPath).replace(/^\.\.(\/|\\|$)+/, '');
+    const filePath = join(rootDir, safePath);
+
+    if (existsSync(filePath)) {
+      const type = MIME[extname(filePath)] || 'application/octet-stream';
+      res.writeHead(200, { 'content-type': type });
+      res.end(readFileSync(filePath));
+      return;
+    }
+
+    const fallback = join(rootDir, 'ui/index.html');
+    res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
+    res.end(readFileSync(fallback));
+  };
+}

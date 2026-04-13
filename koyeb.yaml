@@ -1,0 +1,14 @@
+name: play-skeezers-v3
+services:
+  - name: web
+    type: web
+    ports:
+      - port: 3000
+        protocol: http
+    env:
+      - key: PORT
+        value: "3000"
+    build:
+      builder: dockerfile
+    routes:
+      - path: /
