@@ -1,0 +1,30 @@
+{
+  "themes": [
+    {
+      "id": "default",
+      "label": "Default Midnight",
+      "vars": {
+        "--bg": "#07111f",
+        "--panel": "#0d182a",
+        "--panel-2": "#12233d",
+        "--line": "rgba(120, 164, 255, 0.18)",
+        "--text": "#edf4ff",
+        "--muted": "#9fb3d9",
+        "--accent": "#77b2ff"
+      }
+    },
+    {
+      "id": "violet",
+      "label": "Violet Drift",
+      "vars": {
+        "--bg": "#10091d",
+        "--panel": "#1a1030",
+        "--panel-2": "#231645",
+        "--line": "rgba(191, 145, 255, 0.2)",
+        "--text": "#f5efff",
+        "--muted": "#c4b2ea",
+        "--accent": "#bb8cff"
+      }
+    }
+  ]
+}

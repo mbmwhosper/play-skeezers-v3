@@ -1,5 +1,8 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { extname, join, normalize } from 'node:path';
+import { loadConfig } from './config.js';
+import { checkPasswordGate } from './auth.js';
+import { proxyStatus } from './proxy.js';
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -20,9 +23,22 @@ export function createApp(rootDir) {
       return;
     }
 
+    const auth = checkPasswordGate(req);
+    if (!auth.ok && req.url !== '/health') {
+      res.writeHead(auth.status, { 'content-type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify(auth.body));
+      return;
+    }
+
     if (req.url === '/api/config') {
       res.writeHead(200, { 'content-type': 'application/json; charset=utf-8' });
-      res.end(JSON.stringify({ proxyEnabled: false, passwordProtection: false, themes: ['default'] }));
+      res.end(JSON.stringify(loadConfig()));
+      return;
+    }
+
+    if (req.url === '/api/proxy/status') {
+      res.writeHead(200, { 'content-type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify(proxyStatus()));
       return;
     }
 

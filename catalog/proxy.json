@@ -1,0 +1,12 @@
+{
+  "items": [
+    {
+      "id": "proxy-core",
+      "type": "proxy",
+      "title": "Proxy Core",
+      "status": "planned",
+      "description": "Backend-powered proxy lane reserved for server-side integration.",
+      "route": "/proxy"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "items": [
+    {
+      "id": "browser-workspace",
+      "type": "app",
+      "title": "Browser Workspace",
+      "status": "planned",
+      "description": "Interstellar-style tabbed app and proxy workspace shell.",
+      "route": "/apps/browser-workspace"
+    },
+    {
+      "id": "settings-center",
+      "type": "app",
+      "title": "Settings Center",
+      "status": "live",
+      "description": "Themes, password gate, and platform preferences.",
+      "route": "/settings"
+    }
+  ]
+}
