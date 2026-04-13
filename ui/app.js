@@ -1,3 +1,5 @@
+import { browserWorkspaceMarkup } from './workspace.js';
+
 const routeTitle = document.getElementById('routeTitle');
 const tabsEl = document.getElementById('tabs');
 const tabContentEl = document.getElementById('tabContent');
@@ -96,6 +98,7 @@ function renderTabs() {
       activeTabId = button.dataset.tabId;
       saveTabs();
       renderTabs();
+      bindRenderedEvents(runtimeConfig);
     });
   });
 }
@@ -152,15 +155,21 @@ function bindRenderedEvents(config) {
   });
   document.querySelectorAll('[data-open-route]').forEach((button) => {
     button.addEventListener('click', () => {
+      const route = button.dataset.openRoute;
+      const title = route.split('/').pop();
+      const workspaceContent = route.startsWith('/apps/browser-workspace')
+        ? browserWorkspaceMarkup()
+        : `<p>Route target scaffold: <code>${route}</code></p>`;
       state.tabs.push({
         id: crypto.randomUUID(),
-        title: button.dataset.openRoute,
+        title,
         route: state.activeRoute,
-        content: `<p>Route target scaffold: <code>${button.dataset.openRoute}</code></p>`
+        content: workspaceContent
       });
       activeTabId = state.tabs.at(-1).id;
       saveTabs();
       renderTabs();
+      bindRenderedEvents(config);
     });
   });
 }

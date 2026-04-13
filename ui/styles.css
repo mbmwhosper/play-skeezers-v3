@@ -71,7 +71,7 @@ button.active { background: rgba(119, 178, 255, 0.15); }
   display: grid;
   gap: 1rem;
 }
-.topbar, .tabs-panel, .feature-card, .workspace-card, .lane-card {
+.topbar, .tabs-panel, .feature-card, .workspace-card, .lane-card, .workspace-shell {
   border: 1px solid var(--line);
   background: linear-gradient(180deg, rgba(18,35,61,.92), rgba(10,18,31,.95));
   border-radius: 22px;
@@ -83,7 +83,7 @@ button.active { background: rgba(119, 178, 255, 0.15); }
   gap: 1rem;
   padding: 1rem;
 }
-.topbar-actions, .tabs, .theme-list, .lane-actions {
+.topbar-actions, .tabs, .theme-list, .lane-actions, .workspace-toolbar {
   display: flex;
   gap: .6rem;
   flex-wrap: wrap;
@@ -102,14 +102,30 @@ button.active { background: rgba(119, 178, 255, 0.15); }
   border-radius: 18px;
   padding: 1rem;
 }
-.workspace-card, .lane-card { padding: 1rem; }
-.feature-grid, .lane-grid, .settings-grid {
+.workspace-card, .lane-card, .workspace-shell { padding: 1rem; }
+.feature-grid, .lane-grid, .settings-grid, .workspace-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
 }
+.workspace-body {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.workspace-sidebar {
+  display: grid;
+  gap: .5rem;
+}
+.workspace-view {
+  min-width: 0;
+}
+.workspace-address {
+  flex: 1;
+}
 .feature-card { padding: 1rem; }
 @media (max-width: 900px) {
   .app-shell { grid-template-columns: 1fr; }
-  .feature-grid, .lane-grid, .settings-grid { grid-template-columns: 1fr; }
+  .feature-grid, .lane-grid, .settings-grid, .workspace-grid, .workspace-body { grid-template-columns: 1fr; }
 }
