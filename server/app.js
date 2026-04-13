@@ -1,4 +1,4 @@
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, statSync } from 'node:fs';
 import { extname, join, normalize } from 'node:path';
 import { loadConfig } from './config.js';
 import { checkPasswordGate, verifyPassword } from './auth.js';
@@ -65,19 +65,27 @@ export function createApp(rootDir) {
       return;
     }
 
-    const requestPath = req.url === '/' ? '/ui/index.html' : req.url;
+    const rawUrl = String(req.url || '/');
+    const pathname = rawUrl.split('?')[0] || '/';
+    const requestPath = pathname === '/' ? '/ui/index.html' : pathname;
     const safePath = normalize(requestPath).replace(/^\.\.(\/|\\|$)+/, '');
     const filePath = join(rootDir, safePath);
 
-    if (existsSync(filePath)) {
+    if (existsSync(filePath) && statSync(filePath).isFile()) {
       const type = MIME[extname(filePath)] || 'application/octet-stream';
-      res.writeHead(200, { 'content-type': type });
+      res.writeHead(200, { 'content-type': type, 'cache-control': 'no-store' });
       res.end(readFileSync(filePath));
       return;
     }
 
     const fallback = join(rootDir, 'ui/index.html');
-    res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
-    res.end(readFileSync(fallback));
+    if (existsSync(fallback)) {
+      res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
+      res.end(readFileSync(fallback));
+      return;
+    }
+
+    res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
+    res.end('Not Found');
   };
 }
