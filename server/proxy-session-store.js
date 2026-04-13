@@ -1,3 +1,5 @@
+import { normalizeTargetUrl } from './proxy-utils.js';
+
 const sessions = new Map();
 
 export function listProxySessions() {
@@ -8,7 +10,7 @@ export function createProxySession(input = {}) {
   const session = {
     id: crypto.randomUUID(),
     title: input.title || 'New Proxy Session',
-    targetUrl: input.targetUrl || '',
+    targetUrl: normalizeTargetUrl(input.targetUrl || ''),
     createdAt: new Date().toISOString(),
     status: 'created'
   };
@@ -23,7 +25,12 @@ export function getProxySession(id) {
 export function updateProxySession(id, patch = {}) {
   const current = sessions.get(id);
   if (!current) return null;
-  const next = { ...current, ...patch, updatedAt: new Date().toISOString() };
+  const next = {
+    ...current,
+    ...patch,
+    targetUrl: patch.targetUrl ? normalizeTargetUrl(patch.targetUrl) : current.targetUrl,
+    updatedAt: new Date().toISOString()
+  };
   sessions.set(id, next);
   return next;
 }

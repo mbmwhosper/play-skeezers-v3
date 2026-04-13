@@ -124,6 +124,9 @@ button.active { background: rgba(119, 178, 255, 0.15); }
 .workspace-address {
   flex: 1;
 }
+.workspace-output, .workspace-browser-pane, .workspace-sessions {
+  margin-top: 1rem;
+}
 .feature-card { padding: 1rem; }
 @media (max-width: 900px) {
   .app-shell { grid-template-columns: 1fr; }

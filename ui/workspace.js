@@ -49,6 +49,9 @@ export function browserWorkspaceMarkup() {
             <div class="workspace-output" id="workspaceOutput">
               <p>No proxy session yet.</p>
             </div>
+            <div class="workspace-browser-pane" id="workspaceBrowserPane">
+              <p>Browser pane idle.</p>
+            </div>
             <div class="workspace-sessions" id="workspaceSessions">
               <p>Loading sessions...</p>
             </div>
@@ -63,8 +66,9 @@ export async function bindBrowserWorkspace() {
   const openButton = document.getElementById('workspaceOpen');
   const addressInput = document.getElementById('workspaceAddress');
   const output = document.getElementById('workspaceOutput');
+  const browserPane = document.getElementById('workspaceBrowserPane');
   const sessionsEl = document.getElementById('workspaceSessions');
-  if (!openButton || !addressInput || !output || !sessionsEl) return;
+  if (!openButton || !addressInput || !output || !sessionsEl || !browserPane) return;
 
   async function refreshSessions() {
     const sessions = await fetchSessions();
@@ -80,6 +84,13 @@ export async function bindBrowserWorkspace() {
             <small>Status: ${session.status}</small>
           </article>
         `;
+        browserPane.innerHTML = `
+          <article class="lane-card">
+            <h3>Active Session</h3>
+            <p>${session.targetUrl || 'No target URL set'}</p>
+            <small>This pane will host the real proxy-backed browser surface in a later pass.</small>
+          </article>
+        `;
       });
     });
   }
@@ -91,11 +102,22 @@ export async function bindBrowserWorkspace() {
       body: JSON.stringify({ title: 'Browser Session', targetUrl: addressInput.value })
     });
     const session = await response.json();
+    if (!response.ok) {
+      output.innerHTML = `<p>Failed: ${session.error || 'Unknown error'}</p>`;
+      return;
+    }
     output.innerHTML = `
       <article class="lane-card">
         <h3>${session.title}</h3>
         <p>Target: ${session.targetUrl || 'unset'}</p>
         <small>Status: ${session.status}</small>
+      </article>
+    `;
+    browserPane.innerHTML = `
+      <article class="lane-card">
+        <h3>Active Session</h3>
+        <p>${session.targetUrl || 'No target URL set'}</p>
+        <small>This pane will host the real proxy-backed browser surface in a later pass.</small>
       </article>
     `;
     refreshSessions();
