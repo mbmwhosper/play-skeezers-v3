@@ -1,4 +1,4 @@
-import { browserWorkspaceMarkup } from './workspace.js';
+import { browserWorkspaceMarkup, bindBrowserWorkspace } from './workspace.js';
 
 const routeTitle = document.getElementById('routeTitle');
 const tabsEl = document.getElementById('tabs');
@@ -170,6 +170,7 @@ function bindRenderedEvents(config) {
       saveTabs();
       renderTabs();
       bindRenderedEvents(config);
+      bindBrowserWorkspace();
     });
   });
 }

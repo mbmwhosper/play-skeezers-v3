@@ -6,6 +6,7 @@ import { proxyStatus } from './proxy.js';
 import { createProxyRuntime } from './proxy-runtime.js';
 import { getLane } from './catalog-service.js';
 import { ProxyAdapter } from './proxy-adapter.js';
+import { handleProxyRoute } from './proxy-routes.js';
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -45,6 +46,8 @@ export function createApp(rootDir) {
       res.end(JSON.stringify(auth.body));
       return;
     }
+
+    if (await handleProxyRoute(req, res)) return;
 
     if (req.url === '/api/config') {
       res.writeHead(200, { 'content-type': 'application/json; charset=utf-8' });
