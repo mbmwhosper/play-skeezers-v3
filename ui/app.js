@@ -22,7 +22,7 @@ if (!state.tabs.length) {
       id: crypto.randomUUID(),
       title: 'Home',
       route: 'home',
-      content: 'Welcome to Skeezers Arcade V3. This workspace will power games, apps, proxy, and emulators from one Koyeb-ready stack.'
+      content: 'Welcome to Skeezers Arcade V3. This workspace will power games, apps, proxy, and emulators from one Render-ready stack.'
     }
   ];
 }
@@ -111,6 +111,15 @@ function cardMarkup(item) {
   `;
 }
 
+function featuredMarkup(section) {
+  return `
+    <section>
+      <p class="eyebrow">${section.title}</p>
+      <div class="lane-grid">${(section.items || []).map(cardMarkup).join('')}</div>
+    </section>
+  `;
+}
+
 function settingsMarkup(config) {
   return `
     <div class="settings-grid">
@@ -161,24 +170,21 @@ async function setRoute(route) {
   routeTitle.textContent = route[0].toUpperCase() + route.slice(1);
   navButtons.forEach((button) => button.classList.toggle('active', button.dataset.route === route));
 
-  const lane = await loadLane(route === 'home' || route === 'settings' ? 'integrations' : route);
-  const laneMarkup = route === 'settings'
+  const lane = await loadLane(route === 'home' || route === 'settings' ? (route === 'home' ? 'featured' : 'integrations') : route);
+  const markup = route === 'settings'
     ? settingsMarkup(runtimeConfig)
     : route === 'home'
       ? `
         <div class="workspace-card">
           <h3>Platform overview</h3>
-          <p>V3 is now catalog-driven, Koyeb-ready, and structured for real proxy/app/game integrations.</p>
+          <p>V3 is now catalog-driven, Render-ready, and structured for real proxy/app/game integrations.</p>
         </div>
-        <section>
-          <p class="eyebrow">Planned integrations</p>
-          <div class="lane-grid">${lane.items.map(cardMarkup).join('')}</div>
-        </section>
+        ${(lane.items || []).map(featuredMarkup).join('')}
       `
       : `
         <section>
           <p class="eyebrow">${routeTitle.textContent}</p>
-          <div class="lane-grid">${lane.items.map(cardMarkup).join('')}</div>
+          <div class="lane-grid">${(lane.items || []).map(cardMarkup).join('')}</div>
         </section>
       `;
 
@@ -186,7 +192,7 @@ async function setRoute(route) {
     id: crypto.randomUUID(),
     title: routeTitle.textContent,
     route,
-    content: laneMarkup
+    content: markup
   });
   activeTabId = state.tabs.at(-1).id;
   saveTabs();

@@ -1,0 +1,14 @@
+{
+  "sections": [
+    {
+      "id": "flagships",
+      "title": "Flagships",
+      "items": ["sandboxels", "pvz-web", "browser-workspace"]
+    },
+    {
+      "id": "platform",
+      "title": "Platform lanes",
+      "items": ["settings-center", "proxy-core"]
+    }
+  ]
+}
