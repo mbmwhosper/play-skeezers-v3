@@ -1,3 +1,22 @@
 {
-  "integrations": []
+  "integrations": [
+    {
+      "id": "interstellar-core",
+      "title": "Interstellar Core",
+      "type": "proxy",
+      "status": "planned",
+      "source": "https://github.com/UseInterstellar/Interstellar",
+      "mountPath": "/proxy",
+      "notes": "Server-side runtime target for Koyeb deployment."
+    },
+    {
+      "id": "nettle-emulators",
+      "title": "Nettle Emulator Lane",
+      "type": "emulator",
+      "status": "planned",
+      "source": "https://github.com/nettleweb/nettleweb",
+      "mountPath": "/emulators",
+      "notes": "Emulator integration target after core proxy/app shell is stable."
+    }
+  ]
 }

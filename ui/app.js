@@ -22,9 +22,16 @@ if (!state.tabs.length) {
 }
 
 let activeTabId = localStorage.getItem('v3.activeTabId') || state.tabs[0].id;
+let runtimeConfig = null;
+let proxyState = null;
 
 async function loadConfig() {
   const response = await fetch('/api/config');
+  return response.json();
+}
+
+async function loadProxyState() {
+  const response = await fetch('/api/proxy/status');
   return response.json();
 }
 
@@ -53,7 +60,7 @@ function applyTheme(themeId, themes) {
 function renderTabs() {
   tabsEl.innerHTML = state.tabs.map((tab) => `<button class="tab ${tab.id === activeTabId ? 'active' : ''}" data-tab-id="${tab.id}">${tab.title}</button>`).join('');
   const activeTab = state.tabs.find((tab) => tab.id === activeTabId);
-  tabContentEl.innerHTML = activeTab ? `<h3>${activeTab.title}</h3><p>${activeTab.content}</p>` : '<p>No active tab</p>';
+  tabContentEl.innerHTML = activeTab ? `<div class="workspace-card"><h3>${activeTab.title}</h3><div>${activeTab.content}</div></div>` : '<p>No active tab</p>';
   tabsEl.querySelectorAll('[data-tab-id]').forEach((button) => {
     button.addEventListener('click', () => {
       activeTabId = button.dataset.tabId;
@@ -63,30 +70,86 @@ function renderTabs() {
   });
 }
 
-function setRoute(route, config) {
+function settingsMarkup(config) {
+  return `
+    <div class="settings-grid">
+      <article class="lane-card">
+        <h3>Themes</h3>
+        <div class="theme-list">
+          ${(config.themes || []).map((theme) => `<button class="theme-pick ${theme.id === state.activeTheme ? 'active' : ''}" data-theme="${theme.id}">${theme.label}</button>`).join('')}
+        </div>
+      </article>
+      <article class="lane-card">
+        <h3>Password Gate</h3>
+        <p>${config.passwordProtection ? 'Enabled at backend level' : 'Currently disabled'}</p>
+        <small>${config.passwordHint || 'No password hint set.'}</small>
+      </article>
+      <article class="lane-card">
+        <h3>Proxy Status</h3>
+        <p>${proxyState?.message || 'Unknown'}</p>
+        <small>Enabled flag: ${config.proxyEnabled ? 'true' : 'false'}</small>
+      </article>
+    </div>
+  `;
+}
+
+function laneMarkup(title, items) {
+  return `
+    <section>
+      <p class="eyebrow">${title}</p>
+      <div class="lane-grid">
+        ${items.map((item) => `
+          <article class="lane-card">
+            <h3>${item.title}</h3>
+            <p>${item.description || item.notes || ''}</p>
+            <small>Status: ${item.status || 'unknown'}</small>
+          </article>
+        `).join('')}
+      </div>
+    </section>
+  `;
+}
+
+function setRoute(route) {
   state.activeRoute = route;
   routeTitle.textContent = route[0].toUpperCase() + route.slice(1);
   navButtons.forEach((button) => button.classList.toggle('active', button.dataset.route === route));
 
   const laneMap = {
-    games: config.games,
-    apps: config.apps,
-    proxy: config.proxy,
-    emulators: [{ title: 'Emulators', description: 'Emulator lane is queued after core proxy/app work.' }],
-    settings: [{ title: 'Settings', description: 'Use themes, password gate, and future platform preferences here.' }],
-    home: [{ title: 'Home', description: 'Launcher overview and platform status.' }],
+    games: laneMarkup('Games', runtimeConfig.games || []),
+    apps: laneMarkup('Apps', runtimeConfig.apps || []),
+    proxy: laneMarkup('Proxy', runtimeConfig.proxy || []),
+    emulators: laneMarkup('Emulators', runtimeConfig.integrations.filter((item) => item.type === 'emulator')),
+    settings: settingsMarkup(runtimeConfig),
+    home: `
+      <div class="workspace-card">
+        <h3>Platform overview</h3>
+        <p>V3 is now catalog-driven, Koyeb-ready, and structured for real proxy/app/game integrations.</p>
+      </div>
+      ${laneMarkup('Planned integrations', runtimeConfig.integrations)}
+    `,
   };
 
-  const laneItems = laneMap[route] || [];
   state.tabs.push({
     id: crypto.randomUUID(),
     title: routeTitle.textContent,
     route,
-    content: laneItems.map((item) => `<strong>${item.title}</strong><br>${item.description}<br><small>${item.status || ''}</small>`).join('<hr>')
+    content: laneMap[route] || '<p>Unknown route</p>'
   });
   activeTabId = state.tabs.at(-1).id;
   saveTabs();
   renderTabs();
+  bindSettingsEvents(runtimeConfig);
+}
+
+function bindSettingsEvents(config) {
+  document.querySelectorAll('[data-theme]').forEach((button) => {
+    button.addEventListener('click', () => {
+      applyTheme(button.dataset.theme, config.themes || []);
+      bindSettingsEvents(config);
+      renderTabs();
+    });
+  });
 }
 
 newTabBtn.addEventListener('click', () => {
@@ -101,9 +164,11 @@ newTabBtn.addEventListener('click', () => {
   renderTabs();
 });
 
-loadConfig().then((config) => {
+Promise.all([loadConfig(), loadProxyState()]).then(([config, proxy]) => {
+  runtimeConfig = config;
+  proxyState = proxy;
   applyTheme(state.activeTheme, config.themes || []);
-  navButtons.forEach((button) => button.addEventListener('click', () => setRoute(button.dataset.route, config)));
+  navButtons.forEach((button) => button.addEventListener('click', () => setRoute(button.dataset.route)));
   routeTitle.textContent = state.activeRoute[0].toUpperCase() + state.activeRoute.slice(1);
   navButtons.forEach((button) => button.classList.toggle('active', button.dataset.route === state.activeRoute));
   renderTabs();

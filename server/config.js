@@ -15,6 +15,7 @@ export function loadConfig() {
     apps: readJson('catalog/apps.json').items,
     proxy: readJson('catalog/proxy.json').items,
     themes: readJson('catalog/themes.json').themes,
+    integrations: readJson('catalog/integrations.json').integrations,
     passwordProtection: process.env.V3_PASSWORD_ENABLED === 'true',
     passwordHint: process.env.V3_PASSWORD_HINT || '',
     proxyEnabled: process.env.V3_PROXY_ENABLED === 'true',
