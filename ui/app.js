@@ -103,13 +103,22 @@ function renderTabs() {
   });
 }
 
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
 function cardMarkup(item) {
   return `
     <article class="lane-card">
-      <h3>${item.title}</h3>
-      <p>${item.description || item.notes || ''}</p>
-      <small>Status: ${item.status || 'unknown'}</small>
-      ${item.route ? `<div class="lane-actions"><button data-open-route="${item.route}">Open route</button></div>` : ''}
+      <h3>${escapeHtml(item.title || 'Untitled')}</h3>
+      <p>${escapeHtml(item.description || item.notes || '')}</p>
+      <small>Status: ${escapeHtml(item.status || 'unknown')}</small>
+      ${item.route ? `<div class="lane-actions"><button data-open-route="${escapeHtml(item.route)}">Open route</button></div>` : ''}
     </article>
   `;
 }
@@ -163,7 +172,7 @@ function bindRenderedEvents(config) {
       state.tabs.push({
         id: crypto.randomUUID(),
         title,
-        route: state.activeRoute,
+        route,
         content: workspaceContent
       });
       activeTabId = state.tabs.at(-1).id;
@@ -240,7 +249,15 @@ async function bootstrap() {
     proxyState = proxy;
     applyTheme(state.activeTheme, config.themes || []);
     passwordHintEl.textContent = config.passwordHint || 'Enter the workspace password to continue.';
-    navButtons.forEach((button) => button.onclick = () => setRoute(button.dataset.route));
+    navButtons.forEach((button) => {
+      button.onclick = async () => {
+        try {
+          await setRoute(button.dataset.route);
+        } catch (error) {
+          console.error('route-change-failed', error);
+        }
+      };
+    });
     routeTitle.textContent = state.activeRoute[0].toUpperCase() + state.activeRoute.slice(1);
     navButtons.forEach((button) => button.classList.toggle('active', button.dataset.route === state.activeRoute));
     passwordGateEl.classList.add('hidden');
@@ -253,5 +270,9 @@ async function bootstrap() {
     console.error(error);
   }
 }
+
+window.addEventListener('error', (event) => {
+  console.error('v3-ui-error', event.error || event.message || event);
+});
 
 bootstrap();

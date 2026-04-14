@@ -1,20 +1,3 @@
 {
-  "items": [
-    {
-      "id": "sandboxels",
-      "type": "game",
-      "title": "Sandboxels",
-      "status": "live",
-      "description": "Creative sandbox flagship carried forward from V2.",
-      "route": "/games/sandboxels"
-    },
-    {
-      "id": "pvz-web",
-      "type": "game",
-      "title": "PvZ Web",
-      "status": "live",
-      "description": "Tower-defense flagship lane for V3 migration.",
-      "route": "/games/pvz-web"
-    }
-  ]
+  "items": []
 }

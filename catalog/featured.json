@@ -3,7 +3,7 @@
     {
       "id": "flagships",
       "title": "Flagships",
-      "items": ["sandboxels", "pvz-web", "browser-workspace"]
+      "items": ["browser-workspace"]
     },
     {
       "id": "platform",
