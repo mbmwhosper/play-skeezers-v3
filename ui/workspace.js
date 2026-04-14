@@ -25,7 +25,7 @@ export function browserWorkspaceMarkup() {
         <button class="ghost">Back</button>
         <button class="ghost">Forward</button>
         <button class="ghost">Refresh</button>
-        <input class="workspace-address" id="workspaceAddress" value="https://example.com" />
+        <input class="workspace-address" id="workspaceAddress" value="https://now.gg" />
         <button id="workspaceOpen">Open</button>
       </div>
       <div class="workspace-body">
@@ -41,13 +41,15 @@ export function browserWorkspaceMarkup() {
             <p class="eyebrow">Browser workspace</p>
             <h3>Interstellar-style app shell</h3>
             <p>This is the dedicated workspace surface where browser tabs, cloud gaming launchers, proxy sessions, and utility tools will live.</p>
+            <p class="eyebrow">Current target</p>
+            <p>Render-first shell test now, fuller proxy runtime next. `now.gg` is treated as an explicit compatibility target, not a vague maybe.</p>
             <div class="workspace-grid">
               <article class="lane-card"><h3>Browser Tab</h3><p>Reserved for the proxy-backed browsing surface.</p></article>
               <article class="lane-card"><h3>Cloud Apps</h3><p>Launchers for Now.gg and GeForce NOW style app surfaces.</p></article>
               <article class="lane-card"><h3>Inspect</h3><p>Power-tool surface for inspect-style functionality later.</p></article>
             </div>
             <div class="workspace-output" id="workspaceOutput">
-              <p>No proxy session yet.</p>
+              <p>No proxy session yet. Start with a simple target or test `https://now.gg` to validate the workspace flow.</p>
             </div>
             <div class="workspace-browser-pane" id="workspaceBrowserPane">
               <p>Browser pane idle.</p>
