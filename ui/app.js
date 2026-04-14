@@ -90,9 +90,9 @@ function applyTheme(themeId, themes) {
 }
 
 function renderTabs() {
-  tabsEl.innerHTML = state.tabs.map((tab) => `<button class="tab ${tab.id === activeTabId ? 'active' : ''}" data-tab-id="${tab.id}">${tab.title}</button>`).join('');
+  tabsEl.innerHTML = state.tabs.map((tab) => `<button class="tab ${tab.id === activeTabId ? 'active' : ''}" data-tab-id="${tab.id}">${escapeHtml(tab.title)}</button>`).join('');
   const activeTab = state.tabs.find((tab) => tab.id === activeTabId);
-  tabContentEl.innerHTML = activeTab ? `<div class="workspace-card"><h3>${activeTab.title}</h3><div>${activeTab.content}</div></div>` : '<p>No active tab</p>';
+  tabContentEl.innerHTML = activeTab ? `<div class="workspace-card"><h3>${escapeHtml(activeTab.title)}</h3><div>${activeTab.content}</div></div>` : '<p>No active tab</p>';
   tabsEl.querySelectorAll('[data-tab-id]').forEach((button) => {
     button.addEventListener('click', () => {
       activeTabId = button.dataset.tabId;
@@ -202,18 +202,24 @@ async function setRoute(route) {
       `
       : `
         <section>
-          <p class="eyebrow">${routeTitle.textContent}</p>
+          <p class="eyebrow">${escapeHtml(routeTitle.textContent)}</p>
           <div class="lane-grid">${(lane.items || []).map(cardMarkup).join('')}</div>
         </section>
       `;
 
-  state.tabs.push({
-    id: crypto.randomUUID(),
-    title: routeTitle.textContent,
-    route,
-    content: markup
-  });
-  activeTabId = state.tabs.at(-1).id;
+  const existing = state.tabs.find((tab) => tab.route === route && tab.title === routeTitle.textContent);
+  if (existing) {
+    existing.content = markup;
+    activeTabId = existing.id;
+  } else {
+    state.tabs.push({
+      id: crypto.randomUUID(),
+      title: routeTitle.textContent,
+      route,
+      content: markup
+    });
+    activeTabId = state.tabs.at(-1).id;
+  }
   saveTabs();
   renderTabs();
   bindRenderedEvents(runtimeConfig);
@@ -261,7 +267,7 @@ async function bootstrap() {
     routeTitle.textContent = state.activeRoute[0].toUpperCase() + state.activeRoute.slice(1);
     navButtons.forEach((button) => button.classList.toggle('active', button.dataset.route === state.activeRoute));
     passwordGateEl.classList.add('hidden');
-    renderTabs();
+    await setRoute(state.activeRoute);
   } catch (error) {
     if (String(error.message) === 'AUTH_REQUIRED') {
       passwordGateEl.classList.remove('hidden');
