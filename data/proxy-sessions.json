@@ -1,0 +1,15 @@
+{
+  "items": [
+    {
+      "id": "1e6ca7f5-39ae-4358-b1f8-fc26e43204dc",
+      "title": "GFN",
+      "targetUrl": "https://play.geforcenow.com",
+      "createdAt": "2026-04-15T15:05:50.832Z",
+      "updatedAt": "2026-04-15T15:05:50.832Z",
+      "status": "created",
+      "notes": "",
+      "launchCount": 0,
+      "lastOpenedAt": null
+    }
+  ]
+}

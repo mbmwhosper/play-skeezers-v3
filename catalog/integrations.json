@@ -13,10 +13,10 @@
       "id": "nettle-emulators",
       "title": "Nettle Emulator Lane",
       "type": "emulator",
-      "status": "planned",
+      "status": "in-progress",
       "source": "https://github.com/nettleweb/nettleweb",
       "mountPath": "/emulators",
-      "notes": "Emulator integration target after the shell and proxy lane are stable."
+      "notes": "First emulator lane target. The shell now reserves clean mounting and wrapper boundaries for it."
     },
     {
       "id": "custom-shell-layer",
@@ -26,6 +26,15 @@
       "source": "local",
       "mountPath": "/ui",
       "notes": "Local customization boundary for themes, layouts, lane cards, and future feature flags."
+    },
+    {
+      "id": "proxy-session-store",
+      "title": "Persistent Session Store",
+      "type": "backend",
+      "status": "live",
+      "source": "local",
+      "mountPath": "/data/proxy-sessions.json",
+      "notes": "Proxy sessions now persist across runtime restarts for a real managed workspace flow."
     }
   ]
 }

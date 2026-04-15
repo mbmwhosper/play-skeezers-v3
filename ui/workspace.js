@@ -4,26 +4,64 @@ function authHeaders(authToken, base = {}) {
   return headers;
 }
 
+async function fetchJson(url, options = {}) {
+  const response = await fetch(url, options);
+  if (response.status === 204) return null;
+  return response.json();
+}
+
 async function fetchSessions(authToken) {
-  const response = await fetch('/api/proxy/sessions', {
+  const data = await fetchJson('/api/proxy/sessions', {
     headers: authHeaders(authToken)
   });
-  const data = await response.json();
-  return data.items || [];
+  return data?.items || [];
 }
 
 function renderSessionList(sessions) {
   if (!sessions.length) return '<p>No proxy sessions yet.</p>';
   return sessions.map((session) => `
-    <article class="lane-card">
-      <h3>${session.title}</h3>
-      <p>${session.targetUrl || 'No target URL'}</p>
-      <small>Status: ${session.status}</small>
+    <article class="lane-card compact">
+      <div class="card-head">
+        <div>
+          <h3>${session.title}</h3>
+          <p>${session.targetUrl || 'No target URL'}</p>
+        </div>
+        <div class="card-badges">
+          <span class="card-badge">${session.status}</span>
+          ${session.meta?.recommendedMode ? `<span class="card-badge">${session.meta.recommendedMode}</span>` : ''}
+        </div>
+      </div>
+      <small>Opened ${session.launchCount || 0} time(s)</small>
       <div class="lane-actions">
-        <button data-session-id="${session.id}">Open Session</button>
+        <button data-session-open="${session.id}">Open</button>
+        <button class="ghost" data-session-delete="${session.id}">Delete</button>
       </div>
     </article>
   `).join('');
+}
+
+function renderSessionDetail(session) {
+  const blockedByIframe = Boolean(session.meta?.blockedByIframe);
+  return `
+    <article class="lane-card">
+      <div class="card-head">
+        <div>
+          <p class="eyebrow">Active Session</p>
+          <h3>${session.title}</h3>
+        </div>
+        <div class="card-badges">
+          <span class="card-badge">${session.status}</span>
+          ${session.meta?.recommendedMode ? `<span class="card-badge">${session.meta.recommendedMode}</span>` : ''}
+        </div>
+      </div>
+      <p>Target: ${session.targetUrl || 'No target URL set'}</p>
+      <div class="lane-actions">
+        <a href="/proxy/view/${session.id}" target="_blank" rel="noopener"><button>Open Proxy View</button></a>
+        ${session.targetUrl ? `<a href="${session.targetUrl}" target="_blank" rel="noopener"><button class="ghost">Open Direct</button></a>` : ''}
+      </div>
+      <small>${blockedByIframe ? 'This target will likely block iframe embedding, so direct-open is preferred.' : 'This target supports embedded preview unless the remote site denies framing.'}</small>
+    </article>
+  `;
 }
 
 export function browserWorkspaceMarkup() {
@@ -39,25 +77,22 @@ export function browserWorkspaceMarkup() {
       <div class="workspace-body">
         <aside class="workspace-sidebar">
           <h3>Workspace Apps</h3>
-          <button data-workspace-app="browser">Browser</button>
-          <button data-workspace-app="nowgg">Now.gg</button>
-          <button data-workspace-app="geforce">GeForce NOW</button>
-          <button data-workspace-app="inspect">Inspect Tool</button>
+          <button data-workspace-target="https://now.gg">Now.gg</button>
+          <button data-workspace-target="https://play.geforcenow.com">GeForce NOW</button>
+          <button data-workspace-target="https://example.com">Safe Preview Test</button>
         </aside>
         <section class="workspace-view">
           <div class="workspace-pane">
             <p class="eyebrow">Browser workspace</p>
-            <h3>Interstellar-style app shell</h3>
-            <p>This is the dedicated workspace surface where browser tabs, cloud gaming launchers, proxy sessions, and utility tools will live.</p>
-            <p class="eyebrow">Current target</p>
-            <p>Render-first shell test now, fuller proxy runtime next. `now.gg` is treated as an explicit compatibility target, not a vague maybe.</p>
+            <h3>Customizable Interstellar-style shell</h3>
+            <p>This workspace tracks sessions, opens safe previews when possible, and falls back to direct-open for harder targets.</p>
             <div class="workspace-grid">
-              <article class="lane-card"><h3>Browser Tab</h3><p>Reserved for the proxy-backed browsing surface.</p></article>
-              <article class="lane-card"><h3>Cloud Apps</h3><p>Launchers for Now.gg and GeForce NOW style app surfaces.</p></article>
-              <article class="lane-card"><h3>Inspect</h3><p>Power-tool surface for inspect-style functionality later.</p></article>
+              <article class="lane-card"><h3>Managed Sessions</h3><p>Saved browser sessions persist across restarts.</p></article>
+              <article class="lane-card"><h3>Proxy View</h3><p>Open a session in its dedicated view with iframe fallback handling.</p></article>
+              <article class="lane-card"><h3>Launch Modes</h3><p>Targets can be flagged for embedded preview or external-tab behavior.</p></article>
             </div>
             <div class="workspace-output" id="workspaceOutput">
-              <p>No proxy session yet. Start with a simple target or test `https://now.gg` to validate the workspace flow.</p>
+              <p>No proxy session yet. Start with a target to create one.</p>
             </div>
             <div class="workspace-browser-pane" id="workspaceBrowserPane">
               <p>Browser pane idle.</p>
@@ -80,65 +115,73 @@ export async function bindBrowserWorkspace(authToken = '') {
   const sessionsEl = document.getElementById('workspaceSessions');
   if (!openButton || !addressInput || !output || !sessionsEl || !browserPane) return;
 
+  async function openSession(id) {
+    await fetchJson(`/api/proxy/open/${id}`, {
+      method: 'POST',
+      headers: authHeaders(authToken)
+    });
+    const session = await fetchJson(`/api/proxy/sessions/${id}`, {
+      headers: authHeaders(authToken)
+    });
+    output.innerHTML = renderSessionDetail(session);
+    browserPane.innerHTML = session.meta?.blockedByIframe
+      ? `
+        <article class="lane-card">
+          <p class="eyebrow">Launch mode</p>
+          <h3>External tab recommended</h3>
+          <p>${session.targetUrl}</p>
+          <small>This target is known to block iframe embedding. Use Open Proxy View or Open Direct.</small>
+        </article>
+      `
+      : `
+        <article class="lane-card">
+          <p class="eyebrow">Embedded preview</p>
+          <h3>${session.title}</h3>
+          <iframe src="${session.targetUrl}" referrerpolicy="no-referrer"></iframe>
+        </article>
+      `;
+  }
+
   async function refreshSessions() {
     const sessions = await fetchSessions(authToken);
     sessionsEl.innerHTML = renderSessionList(sessions);
-    sessionsEl.querySelectorAll('[data-session-id]').forEach((button) => {
+    sessionsEl.querySelectorAll('[data-session-open]').forEach((button) => {
       button.addEventListener('click', async () => {
-        const response = await fetch(`/api/proxy/sessions/${button.dataset.sessionId}`, {
+        await openSession(button.dataset.sessionOpen);
+        await refreshSessions();
+      });
+    });
+    sessionsEl.querySelectorAll('[data-session-delete]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        await fetch(`/api/proxy/sessions/${button.dataset.sessionDelete}`, {
+          method: 'DELETE',
           headers: authHeaders(authToken)
         });
-        const session = await response.json();
-        output.innerHTML = `
-          <article class="lane-card">
-            <h3>${session.title}</h3>
-            <p>Target: ${session.targetUrl || 'unset'}</p>
-            <small>Status: ${session.status}</small>
-          </article>
-        `;
-        browserPane.innerHTML = `
-          <article class="lane-card">
-            <h3>Active Session</h3>
-            <p>${session.targetUrl || 'No target URL set'}</p>
-            <div class="lane-actions">
-              <a href="/proxy/view/${session.id}" target="_blank" rel="noopener"><button>Open Proxy View</button></a>
-            </div>
-            <small>This opens the current proxy-view route contract for the session.</small>
-          </article>
-        `;
+        output.innerHTML = '<p>Session deleted.</p>';
+        browserPane.innerHTML = '<p>Browser pane idle.</p>';
+        await refreshSessions();
       });
     });
   }
 
+  document.querySelectorAll('[data-workspace-target]').forEach((button) => {
+    button.addEventListener('click', () => {
+      addressInput.value = button.dataset.workspaceTarget;
+    });
+  });
+
   openButton.addEventListener('click', async () => {
-    const response = await fetch('/api/proxy/sessions', {
+    const session = await fetchJson('/api/proxy/sessions', {
       method: 'POST',
       headers: authHeaders(authToken, { 'content-type': 'application/json' }),
       body: JSON.stringify({ title: 'Browser Session', targetUrl: addressInput.value })
     });
-    const session = await response.json();
-    if (!response.ok) {
-      output.innerHTML = `<p>Failed: ${session.error || 'Unknown error'}</p>`;
+    if (!session?.id) {
+      output.innerHTML = `<p>Failed: ${session?.error || 'Unknown error'}</p>`;
       return;
     }
-    output.innerHTML = `
-      <article class="lane-card">
-        <h3>${session.title}</h3>
-        <p>Target: ${session.targetUrl || 'unset'}</p>
-        <small>Status: ${session.status}</small>
-      </article>
-    `;
-    browserPane.innerHTML = `
-      <article class="lane-card">
-        <h3>Active Session</h3>
-        <p>${session.targetUrl || 'No target URL set'}</p>
-        <div class="lane-actions">
-          <a href="/proxy/view/${session.id}" target="_blank" rel="noopener"><button>Open Proxy View</button></a>
-        </div>
-        <small>This opens the current proxy-view route contract for the session.</small>
-      </article>
-    `;
-    refreshSessions();
+    await openSession(session.id);
+    await refreshSessions();
   });
 
   refreshSessions();
