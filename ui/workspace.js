@@ -1,5 +1,13 @@
-async function fetchSessions() {
-  const response = await fetch('/api/proxy/sessions');
+function authHeaders(authToken, base = {}) {
+  const headers = new Headers(base);
+  if (authToken) headers.set('x-v3-password', authToken);
+  return headers;
+}
+
+async function fetchSessions(authToken) {
+  const response = await fetch('/api/proxy/sessions', {
+    headers: authHeaders(authToken)
+  });
   const data = await response.json();
   return data.items || [];
 }
@@ -64,7 +72,7 @@ export function browserWorkspaceMarkup() {
   `;
 }
 
-export async function bindBrowserWorkspace() {
+export async function bindBrowserWorkspace(authToken = '') {
   const openButton = document.getElementById('workspaceOpen');
   const addressInput = document.getElementById('workspaceAddress');
   const output = document.getElementById('workspaceOutput');
@@ -73,11 +81,13 @@ export async function bindBrowserWorkspace() {
   if (!openButton || !addressInput || !output || !sessionsEl || !browserPane) return;
 
   async function refreshSessions() {
-    const sessions = await fetchSessions();
+    const sessions = await fetchSessions(authToken);
     sessionsEl.innerHTML = renderSessionList(sessions);
     sessionsEl.querySelectorAll('[data-session-id]').forEach((button) => {
       button.addEventListener('click', async () => {
-        const response = await fetch(`/api/proxy/sessions/${button.dataset.sessionId}`);
+        const response = await fetch(`/api/proxy/sessions/${button.dataset.sessionId}`, {
+          headers: authHeaders(authToken)
+        });
         const session = await response.json();
         output.innerHTML = `
           <article class="lane-card">
@@ -103,7 +113,7 @@ export async function bindBrowserWorkspace() {
   openButton.addEventListener('click', async () => {
     const response = await fetch('/api/proxy/sessions', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: authHeaders(authToken, { 'content-type': 'application/json' }),
       body: JSON.stringify({ title: 'Browser Session', targetUrl: addressInput.value })
     });
     const session = await response.json();

@@ -18,8 +18,8 @@ export function loadConfig() {
     themes: readJson('catalog/themes.json').themes,
     integrations: readJson('catalog/integrations.json').integrations,
     interstellar: loadInterstellarCatalog(),
-    passwordProtection: process.env.V3_PASSWORD_ENABLED === 'true',
-    passwordHint: process.env.V3_PASSWORD_HINT || '',
+    passwordProtection: false,
+    passwordHint: '',
     proxyEnabled: process.env.V3_PROXY_ENABLED === 'true',
   };
 }

@@ -92,13 +92,14 @@ function applyTheme(themeId, themes) {
 function renderTabs() {
   tabsEl.innerHTML = state.tabs.map((tab) => `<button class="tab ${tab.id === activeTabId ? 'active' : ''}" data-tab-id="${tab.id}">${escapeHtml(tab.title)}</button>`).join('');
   const activeTab = state.tabs.find((tab) => tab.id === activeTabId);
-  tabContentEl.innerHTML = activeTab ? `<div class="workspace-card"><h3>${escapeHtml(activeTab.title)}</h3><div>${activeTab.content}</div></div>` : '<p>No active tab</p>';
+  tabContentEl.innerHTML = activeTab ? `<div class="workspace-card"><div>${activeTab.content}</div></div>` : '<p>No active tab</p>';
   tabsEl.querySelectorAll('[data-tab-id]').forEach((button) => {
     button.addEventListener('click', () => {
       activeTabId = button.dataset.tabId;
       saveTabs();
       renderTabs();
       bindRenderedEvents(runtimeConfig);
+      bindWorkspaceIfPresent();
     });
   });
 }
@@ -156,6 +157,7 @@ function settingsMarkup(config) {
 }
 
 function bindRenderedEvents(config) {
+  if (!config) return;
   document.querySelectorAll('[data-theme]').forEach((button) => {
     button.addEventListener('click', () => {
       applyTheme(button.dataset.theme, config.themes || []);
@@ -168,7 +170,7 @@ function bindRenderedEvents(config) {
       const title = route.split('/').pop();
       const workspaceContent = route.startsWith('/apps/browser-workspace')
         ? browserWorkspaceMarkup()
-        : `<p>Route target scaffold: <code>${route}</code></p>`;
+        : `<section><p class="eyebrow">${escapeHtml(title)}</p><div class="workspace-card"><p>Route target scaffold: <code>${escapeHtml(route)}</code></p></div></section>`;
       state.tabs.push({
         id: crypto.randomUUID(),
         title,
@@ -179,9 +181,16 @@ function bindRenderedEvents(config) {
       saveTabs();
       renderTabs();
       bindRenderedEvents(config);
-      bindBrowserWorkspace();
+      bindWorkspaceIfPresent();
     });
   });
+}
+
+function bindWorkspaceIfPresent() {
+  const activeTab = state.tabs.find((tab) => tab.id === activeTabId);
+  if (activeTab?.route?.startsWith('/apps/browser-workspace')) {
+    bindBrowserWorkspace(state.authToken);
+  }
 }
 
 async function setRoute(route) {
@@ -223,6 +232,7 @@ async function setRoute(route) {
   saveTabs();
   renderTabs();
   bindRenderedEvents(runtimeConfig);
+  bindWorkspaceIfPresent();
 }
 
 newTabBtn.addEventListener('click', () => {
@@ -254,7 +264,7 @@ async function bootstrap() {
     runtimeConfig = config;
     proxyState = proxy;
     applyTheme(state.activeTheme, config.themes || []);
-    passwordHintEl.textContent = config.passwordHint || 'Enter the workspace password to continue.';
+    passwordHintEl.textContent = config.passwordProtection ? (config.passwordHint || 'Enter the workspace password to continue.') : 'No password required.';
     navButtons.forEach((button) => {
       button.onclick = async () => {
         try {
