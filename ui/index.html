@@ -23,8 +23,14 @@
       <div class="brand">
         <p class="eyebrow">V3</p>
         <h1>Skeezers Arcade</h1>
-        <p class="subtle">Render-ready games, apps, proxy, and emulator platform.</p>
+        <p class="subtle">Interstellar-inspired arcade, apps, browser workspace, and emulator platform with your own customization layer.</p>
       </div>
+
+      <label class="search-shell">
+        <span class="eyebrow">Search</span>
+        <input id="globalSearch" type="search" placeholder="Search games, apps, features" />
+      </label>
+
       <nav class="nav">
         <button data-route="home" class="active">Home</button>
         <button data-route="games">Games</button>
@@ -34,6 +40,15 @@
         <button data-route="emulators">Emulators</button>
         <button data-route="settings">Settings</button>
       </nav>
+
+      <section class="sidebar-panel">
+        <p class="eyebrow">Platform</p>
+        <div class="sidebar-stats">
+          <div><strong>Custom</strong><span>theme-driven shell</span></div>
+          <div><strong>Proxy</strong><span>session-based workspace</span></div>
+          <div><strong>Import-safe</strong><span>adapter boundaries</span></div>
+        </div>
+      </section>
     </aside>
 
     <main class="main">
@@ -41,35 +56,17 @@
         <div>
           <p class="eyebrow">Workspace</p>
           <h2 id="routeTitle">Home</h2>
+          <small id="laneMeta" class="subtle">ready to launch</small>
         </div>
-        <div class="topbar-actions">
+        <div class="topbar-actions" id="laneActions">
           <button id="newTabBtn">New Tab</button>
-          <button class="ghost">Themes</button>
-          <button class="ghost">Login Gate</button>
+          <button class="ghost" data-route="settings">Customize</button>
         </div>
       </header>
 
       <section class="tabs-panel">
         <div id="tabs" class="tabs"></div>
         <div id="tabContent" class="tab-content"></div>
-      </section>
-
-      <section class="feature-grid">
-        <article class="feature-card">
-          <p class="eyebrow">Games</p>
-          <h3>Fast launch surface</h3>
-          <p>Catalog lane for hosted games with search, featured rows, and quick-open flows.</p>
-        </article>
-        <article class="feature-card">
-          <p class="eyebrow">Apps</p>
-          <h3>Interstellar-style app shell</h3>
-          <p>App lane for browser tools, utility surfaces, and imported integrations with boundaries.</p>
-        </article>
-        <article class="feature-card">
-          <p class="eyebrow">Proxy</p>
-          <h3>Backend-powered lane</h3>
-          <p>Proxy lane reserved for Render-hosted runtime support, not static-host fakery.</p>
-        </article>
       </section>
     </main>
   </div>

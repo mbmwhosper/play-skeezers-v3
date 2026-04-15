@@ -1,3 +1,52 @@
 {
-  "items": []
+  "items": [
+    {
+      "id": "slope",
+      "type": "game",
+      "title": "Slope",
+      "status": "live",
+      "description": "Fast reflex runner for quick launches and tabbed play sessions.",
+      "route": "/games/slope"
+    },
+    {
+      "id": "sandboxels",
+      "type": "game",
+      "title": "Sandboxels",
+      "status": "live",
+      "description": "Physics sandbox lane with room for local wrapper controls and presets.",
+      "route": "/games/sandboxels"
+    },
+    {
+      "id": "ovo",
+      "type": "game",
+      "title": "OvO",
+      "status": "live",
+      "description": "Precision platformer for the featured arcade lane.",
+      "route": "/games/ovo"
+    },
+    {
+      "id": "bitlife",
+      "type": "game",
+      "title": "BitLife",
+      "status": "planned",
+      "description": "Popular long-session game slot kept ready for a proper wrapper.",
+      "route": "/games/bitlife"
+    },
+    {
+      "id": "retro-bowl",
+      "type": "game",
+      "title": "Retro Bowl",
+      "status": "planned",
+      "description": "Sports flagship with quick-open handoff from the home lane.",
+      "route": "/games/retro-bowl"
+    },
+    {
+      "id": "minecraft-classic",
+      "type": "game",
+      "title": "Minecraft Classic",
+      "status": "planned",
+      "description": "Browser classic reserved for a custom hosted wrapper path.",
+      "route": "/games/minecraft-classic"
+    }
+  ]
 }

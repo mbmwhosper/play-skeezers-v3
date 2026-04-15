@@ -4,10 +4,10 @@
       "id": "interstellar-core",
       "title": "Interstellar Core",
       "type": "proxy",
-      "status": "planned",
+      "status": "draft",
       "source": "https://github.com/UseInterstellar/Interstellar",
       "mountPath": "/proxy",
-      "notes": "Server-side runtime target for Koyeb deployment."
+      "notes": "Reference source for browser workspace feel and selected feature parity, not wholesale ownership of the app."
     },
     {
       "id": "nettle-emulators",
@@ -16,7 +16,16 @@
       "status": "planned",
       "source": "https://github.com/nettleweb/nettleweb",
       "mountPath": "/emulators",
-      "notes": "Emulator integration target after core proxy/app shell is stable."
+      "notes": "Emulator integration target after the shell and proxy lane are stable."
+    },
+    {
+      "id": "custom-shell-layer",
+      "title": "Custom Shell Layer",
+      "type": "shared-ui",
+      "status": "live",
+      "source": "local",
+      "mountPath": "/ui",
+      "notes": "Local customization boundary for themes, layouts, lane cards, and future feature flags."
     }
   ]
 }

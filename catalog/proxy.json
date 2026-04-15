@@ -4,9 +4,17 @@
       "id": "proxy-core",
       "type": "proxy",
       "title": "Proxy Core",
-      "status": "planned",
-      "description": "Backend-powered proxy lane reserved for server-side integration.",
+      "status": "in-progress",
+      "description": "Backend-powered browser lane with session creation, previews, and upgrade path to a real upstream runtime.",
       "route": "/proxy"
+    },
+    {
+      "id": "session-manager",
+      "type": "proxy",
+      "title": "Session Manager",
+      "status": "live",
+      "description": "Create, list, reopen, and manage browser sessions from the workspace shell.",
+      "route": "/apps/browser-workspace"
     }
   ]
 }

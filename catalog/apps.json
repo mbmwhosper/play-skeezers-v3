@@ -4,8 +4,8 @@
       "id": "browser-workspace",
       "type": "app",
       "title": "Browser Workspace",
-      "status": "planned",
-      "description": "Interstellar-style tabbed app and proxy workspace shell.",
+      "status": "live",
+      "description": "Interstellar-style tabbed browser workspace and proxy session shell.",
       "route": "/apps/browser-workspace"
     },
     {
@@ -13,8 +13,24 @@
       "type": "app",
       "title": "Settings Center",
       "status": "live",
-      "description": "Themes, password gate, and platform preferences.",
+      "description": "Themes, layout controls, and platform customization settings.",
       "route": "/settings"
+    },
+    {
+      "id": "cloud-launchers",
+      "type": "app",
+      "title": "Cloud Launchers",
+      "status": "planned",
+      "description": "Custom launch surface for services like Now.gg and GeForce NOW.",
+      "route": "/apps/cloud-launchers"
+    },
+    {
+      "id": "import-manager",
+      "type": "app",
+      "title": "Import Manager",
+      "status": "planned",
+      "description": "Future admin surface for imported repos, wrappers, and status tracking.",
+      "route": "/apps/import-manager"
     }
   ]
 }
