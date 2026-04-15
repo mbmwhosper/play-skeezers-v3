@@ -13,10 +13,10 @@
       "id": "nettle-emulators",
       "title": "Nettle Emulator Lane",
       "type": "emulator",
-      "status": "in-progress",
+      "status": "live",
       "source": "https://github.com/nettleweb/nettleweb",
       "mountPath": "/emulators",
-      "notes": "First emulator lane target. The shell now reserves clean mounting and wrapper boundaries for it."
+      "notes": "First emulator lane is now mounted through local wrapper routes so the shell can grow into a real emulator surface cleanly."
     },
     {
       "id": "custom-shell-layer",
@@ -35,6 +35,15 @@
       "source": "local",
       "mountPath": "/data/proxy-sessions.json",
       "notes": "Proxy sessions now persist across runtime restarts for a real managed workspace flow."
+    },
+    {
+      "id": "route-wrapper-layer",
+      "title": "Route Wrapper Layer",
+      "type": "shared-ui",
+      "status": "live",
+      "source": "local",
+      "mountPath": "/server/route-wrappers.js",
+      "notes": "Games, apps, and emulator paths now have real wrapper views instead of dead placeholders."
     }
   ]
 }

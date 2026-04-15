@@ -10,13 +10,14 @@ V3 of `play.skeezers.org`, designed as a Render-ready full-stack arcade, app, pr
 - Clean integration path for third-party GitHub repos without turning the codebase into a mess
 
 ## Current direction
-This is the preferred foundation for the next generation of `play.skeezers.org`.
+This repo is the active foundation for the next generation of `play.skeezers.org`.
 
-The current trial plan is:
-- use V3 as the main product shell
-- polish the UI and workspace flow
-- bring in the apps and games you want from the Interstellar-style ecosystem
-- test first on Render before deciding whether a home-server proxy runtime is needed for harder targets like `now.gg`
+What now exists:
+- customizable shell and theme system
+- search, lane routing, and closable tabs
+- persistent browser workspace sessions
+- wrapper routes for games, apps, and emulator surfaces
+- Render/Koyeb deploy configs
 
 ## Local development
 ```bash
@@ -29,8 +30,14 @@ Then open:
 - health check: `http://localhost:3000/health`
 - proxy status: `http://localhost:3000/api/proxy/status`
 
+## Important routes
+- `/proxy/view/:id` → dedicated proxy session view
+- `/games/...` → game wrappers
+- `/apps/...` → app wrappers
+- `/emulators/gb` → first emulator wrapper lane
+
 ## Render deployment
-This repo already includes `render.yaml` for a free-tier web-service trial.
+This repo includes `render.yaml` for a web-service deployment.
 
 Default service shape:
 - runtime: Node
@@ -43,4 +50,4 @@ Environment flags currently used:
 - `V3_PROXY_ENABLED=false`
 
 ## Status
-Scaffolded architecture with working server, UI shell, lane APIs, and proxy session scaffolding. Real proxy runtime wiring and UI polish are the next major steps.
+The shell, route wrappers, and persistent proxy workspace are in place. Full upstream-grade proxy runtime compatibility for hard targets is still a future enhancement, but the product shell itself is now deployable and testable end to end.

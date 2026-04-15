@@ -8,6 +8,7 @@ import { getLane } from './catalog-service.js';
 import { ProxyAdapter } from './proxy-adapter.js';
 import { handleProxyRoute } from './proxy-routes.js';
 import { renderProxyView } from './proxy-view.js';
+import { renderRouteWrapper } from './route-wrappers.js';
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -53,6 +54,13 @@ export function createApp(rootDir) {
       const view = renderProxyView(sessionId);
       res.writeHead(view.status, { 'content-type': 'text/html; charset=utf-8' });
       res.end(view.html);
+      return;
+    }
+
+    const wrapper = renderRouteWrapper(req.url?.split('?')[0] || '');
+    if (wrapper) {
+      res.writeHead(wrapper.status, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
+      res.end(wrapper.html);
       return;
     }
 
